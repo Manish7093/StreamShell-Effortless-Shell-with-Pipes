@@ -30,7 +30,6 @@ void ChildWait()
             }
             else
             {
-                int exitStatus = flag >> 8; // Extract exit status from the status variable
                 int signal = flag & 0x7F;    // Extract termination signal from the status variable
 
                 if (signal)

@@ -13,37 +13,45 @@ const char Pipe = '|';
 bool shouldStop = false; // Global flag to control the loop execution
 void ChildWait()
 {
-    while (true)
+    while (!shouldStop)
     {
         int flag;
         pid_t pid;
 
         // Wait for any child process to exit without blocking
-        while (!shouldStop)
-        {
-            pid = waitpid(-1, &flag, WNOHANG);
+        pid = waitpid(-1, &flag, WNOHANG);
 
-            if (pid > 0)
+        if (pid > 0)
+        {
+            if (flag == 0)
             {
-                if (flag == 0)
+                // Child process exited normally; do not print a message
+                return;
+            }
+            else
+            {
+                int exitStatus = flag >> 8; // Extract exit status from the status variable
+                int signal = flag & 0x7F;    // Extract termination signal from the status variable
+
+                if (signal)
                 {
-                    Logger::log("Process " + std::to_string(pid) + " exited normally");
+                    Logger::log("Process " + std::to_string(pid) + " terminated by signal: " + std::to_string(signal));
+                    return;
                 }
                 else
                 {
-                    int exitStatus = flag >> 8; // Extract exit status from the status variable
-                    int signal = flag & 0x7F;    // Extract termination signal from the status variable
-
-                    if (signal)
-                    {
-                        Logger::log("Process " + std::to_string(pid) + " terminated by signal: " + std::to_string(signal));
-                    }
-                    else
-                    {
-                        Logger::log("Process " + std::to_string(pid) + " exited with exit status: " + std::to_string(exitStatus));
-                    }
+                    return;
                 }
             }
+        }
+        else if (pid == 0)
+        {
+            // No child process has exited
+            usleep(10); // Sleep for a short duration to avoid busy waiting
+        }
+        else if (pid == -1 && errno != ECHILD)
+        {
+            Logger::error("Error in waitpid");
         }
     }
 }

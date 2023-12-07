@@ -9,7 +9,7 @@ public:
     static void setEnvironmentVariable(const std::string& name, const std::string& value);
     static std::string getEnvironmentVariable(const std::string& name);
     static void removeEnvironmentVariable(const std::string& name);
-private:
+    static const std::unordered_map<std::string, std::string>& getEnvironmentVariables();
     static std::unordered_map<std::string, std::string> environmentVariables;
 };
 

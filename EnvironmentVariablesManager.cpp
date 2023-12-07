@@ -20,3 +20,7 @@ void EnvironmentVariablesManager::removeEnvironmentVariable(const std::string& n
         environmentVariables.erase(it);
     }
 }
+
+const std::unordered_map<std::string, std::string>& EnvironmentVariablesManager::getEnvironmentVariables() {
+    return environmentVariables;
+}

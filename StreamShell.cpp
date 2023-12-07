@@ -171,7 +171,14 @@ int main(int argc, char *argv[])
         // Display prompt and wait for input
         std::cout << "StreamShell$ ";
         std::string rawMultiShell;
-        getline(std::cin, rawMultiShell);
+
+        // Handle End Of File
+        if(!getline(std::cin, rawMultiShell))
+        {
+            std::cout<<"\nExiting shell\n";
+            break;
+        }
+
         // Replace environment variables in the user input
         rawMultiShell = Parser::replaceEnvironmentVariables(rawMultiShell);
 
